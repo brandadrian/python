@@ -1,3 +1,4 @@
+from datetime import datetime
 #Python Basics
 
 print('Python Basics Script\n')
@@ -18,6 +19,10 @@ elif c == 10:
     print(c, 'is qual to 10')
 else:
     print(c, 'is smaller than 10')
+
+###DateTime###
+dateTimeObj = datetime.now()
+print('Message from: ', dateTimeObj)
 
 ###Loops###
 print('For Loop\n')
