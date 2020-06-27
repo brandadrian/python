@@ -6,7 +6,7 @@ import ssl
 class requestHandler(BaseHTTPRequestHandler):
     ###GET
     def do_GET(self):
-        log('GET: ' + self.path)
+        log('GET; ' + self.path + '; IP; ' + self.client_address[0])
         try:
             if (self.path.endswith('/cars')):
                 self.send_response(200)
@@ -37,6 +37,7 @@ class requestHandler(BaseHTTPRequestHandler):
             
     ###POST
     def do_POST(self):
+        log('POST; ' + self.path + '; IP; ' + self.client_address[0])
         try:
             if (self.path.endswith('/cars')):
                 content_len = int(self.headers.get('Content-Length'))
@@ -53,7 +54,7 @@ class requestHandler(BaseHTTPRequestHandler):
             self.end_headers()
             
 def serve():
-    PORT = 8112
+    PORT = 9000
     server_address = ('192.168.1.109', PORT)
     server = HTTPServer(server_address, requestHandler)
     print('Server running on port: ', PORT)
