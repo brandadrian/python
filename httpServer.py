@@ -13,18 +13,20 @@ class requestHandler(BaseHTTPRequestHandler):
             elif (self.path.endswith('/seppli')):
                 self.send_response(200)
                 self.send_header('Content-type', 'application/json')
+                self.send_header('Access-Control-Allow-Origin', '*')
                 self.end_headers()
                 self.wfile.write(json.dumps({'message': 'hoi seppli!'}).encode('utf-8'))
             elif (self.path.endswith('/status')):
                 self.send_response(200)
                 self.send_header('Content-type', 'application/json')
+                self.send_header('Access-Control-Allow-Origin', '*')
                 self.end_headers()
                 f=open("/volume1/homes/brandadr/tasks/httpServerLog.txt", "r")
                 logLines = f.readlines()
                 logLines.reverse()
                 f.close()  
                 for logLine in logLines:
-                	self.wfile.write(logLine.encode('utf-8'))
+                	self.wfile.write(json.dumps({'message': logLine}).encode('utf-8'))
             else:
                 self.send_response(404)
             self.end_headers()
