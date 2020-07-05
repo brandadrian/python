@@ -1,27 +1,32 @@
+###########################################
+#Python service for brand-api
+#Autho: Adrian Brand
+#Descripion:
+#Web service to connect to home automation
+###########################################
+
 from http.server import HTTPServer, BaseHTTPRequestHandler
 from datetime import datetime
 import json
 import ssl
 
-class requestHandler(BaseHTTPRequestHandler):
+class requestHandler(BaseHTTPRequestHandler):        
     ###GET
     def do_GET(self):
         log('GET; ' + self.path + '; IP; ' + self.client_address[0])
         try:
-            if (self.path.endswith('/cars')):
-                self.send_response(200)
-            elif (self.path.endswith('/seppli')):
-                self.send_response(200)
-                self.send_header('Content-type', 'application/json')
-                self.send_header('Access-Control-Allow-Origin', '*')
-                self.end_headers()
-                self.wfile.write(json.dumps({'message': 'hoi seppli!'}).encode('utf-8'))
+            if (self.path.endswith('/home-automation')):
+                receive_GET(self, 'interface to home automation devices')
+            elif (self.path.endswith('/home-automation/shelly')):
+                receive_GET(self, 'interface to shelly devices')
+            elif (self.path.endswith('/server-state')):
+                receive_GET(self, 'server running')
             elif (self.path.endswith('/status')):
                 self.send_response(200)
                 self.send_header('Content-type', 'application/json')
                 self.send_header('Access-Control-Allow-Origin', '*')
                 self.end_headers()
-                f=open("/volume1/homes/brandadr/tasks/httpServerLog.txt", "r")
+                f=open("httpServerLog.txt", "r")
                 logLines = f.readlines()
                 logLines.reverse()
                 f.close()  
@@ -56,8 +61,8 @@ class requestHandler(BaseHTTPRequestHandler):
             self.end_headers()
             
 def serve():
-    PORT = 9000
-    server_address = ('192.168.1.109', PORT)
+    PORT = 9001
+    server_address = ('', PORT)
     server = HTTPServer(server_address, requestHandler)
     print('Server running on port: ', PORT)
     log('server started on port: ' + str(PORT))
@@ -66,8 +71,15 @@ def serve():
 def log(message):
     dateTimeObj = datetime.now()
     messageInternal = dateTimeObj.strftime("%m/%d/%Y, %H:%M:%S") + "; " + message + '\n'
-    f = open("/volume1/homes/brandadr/tasks/httpServerLog.txt", "a")
+    f = open("httpServerLog.txt", "a")
     f.write(messageInternal)
-    f.close()    
+    f.close()
+    
+def receive_GET(self, message):
+    self.send_response(200)
+    self.send_header('Content-type', 'application/json')
+    self.send_header('Access-Control-Allow-Origin', '*')
+    self.end_headers()
+    self.wfile.write(json.dumps({'message': message}).encode('utf-8'))
 
 serve()
