@@ -57,8 +57,7 @@ class requestHandler(BaseHTTPRequestHandler):
             log("Unexpected error; " + error)
             print("Unexpected error:", error)
             self.send_response(500)
-
-        self.end_headers()
+            self.end_headers()   
             
     ###POST
     def do_POST(self):
