@@ -28,7 +28,7 @@ class requestHandler(BaseHTTPRequestHandler):
             isAuthenticated = self.headers.get('Authorization') == 'Basic ' + config[CONFIG_APIAUTHORIZATION]
 
             if (self.path.endswith('/home-automation')):
-                end_response(self, 'interface to home automation devices', 200)
+                send_response(self, 'interface to home automation devices', 200)
 
             elif (self.path.endswith('/home-automation/shelly')):
                 send_response(self, 'interface to shelly devices', 200)
