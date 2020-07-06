@@ -15,6 +15,7 @@ import configparser
 CONFIG_PORT = 'port'
 CONFIG_SHELLYURL = "shelly-url"
 CONFIG_SHELLYRELAY0 = 'shelly-relay0'
+CONFIG_SHELLYAUTHORIZATION = 'authorization-token'
 
 class requestHandler(BaseHTTPRequestHandler):
     ###GET
@@ -22,13 +23,13 @@ class requestHandler(BaseHTTPRequestHandler):
         log('GET; ' + self.path + '; IP; ' + self.client_address[0])
         try:
             config = getConfig()
-            
+
             if (self.path.endswith('/home-automation')):
                 receive_GET(self, 'interface to home automation devices')
             elif (self.path.endswith('/home-automation/shelly')):
                 receive_GET(self, 'interface to shelly devices')
             elif (self.path.endswith('/home-automation/shelly/relay/0')):
-                request = requests.get(config[CONFIG_SHELLYURL] + config[CONFIG_SHELLYRELAY0])
+                request = requests.get(config[CONFIG_SHELLYURL] + config[CONFIG_SHELLYRELAY0], headers={'Authorization': 'Basic ' + config[CONFIG_SHELLYAUTHORIZATION]})
                 receive_GET(self, request.text)
             elif (self.path.endswith('/server-state')):
                 receive_GET(self, 'server running')
