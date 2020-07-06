@@ -27,6 +27,9 @@ class requestHandler(BaseHTTPRequestHandler):
             config = getConfig()
             isAuthenticated = self.headers.get('Authorization') == 'Basic ' + config[CONFIG_APIAUTHORIZATION]
 
+            if (self.path.endswith('/server-state')):
+                send_response(self, 'server running', 200)
+
             if (isAuthenticated):
                 if (self.path.endswith('/home-automation')):
                     send_response(self, 'interface to home automation devices', 200)
@@ -37,9 +40,6 @@ class requestHandler(BaseHTTPRequestHandler):
                 elif (self.path.endswith('/home-automation/shelly/relay/0')):
                     request = requests.get(config[CONFIG_SHELLYURL] + config[CONFIG_SHELLYRELAY0], headers={'Authorization': 'Basic ' + config[CONFIG_SHELLYAUTHORIZATION]})
                     send_response(self, request.text, 200)
-
-                elif (self.path.endswith('/server-state')):
-                    send_response(self, 'server running', 200)
 
                 elif (self.path.endswith('/status')):
                     f=open("httpServerLog.txt", "r")
