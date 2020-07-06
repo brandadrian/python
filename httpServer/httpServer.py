@@ -15,44 +15,50 @@ import configparser
 CONFIG_PORT = 'port'
 CONFIG_SHELLYURL = "shelly-url"
 CONFIG_SHELLYRELAY0 = 'shelly-relay0'
-CONFIG_SHELLYAUTHORIZATION = 'authorization-token'
+CONFIG_SHELLYAUTHORIZATION = 'shelly-authorization-token'
+CONFIG_APIAUTHORIZATION = 'api-authorization-token'
 
 class requestHandler(BaseHTTPRequestHandler):
     ###GET
     def do_GET(self):
         log('GET; ' + self.path + '; IP; ' + self.client_address[0])
+
         try:
             config = getConfig()
+            isAuthenticated = self.headers.get('Authorization') == 'Basic ' + config[CONFIG_APIAUTHORIZATION]
 
-            if (self.path.endswith('/home-automation')):
-                receive_GET(self, 'interface to home automation devices')
-            elif (self.path.endswith('/home-automation/shelly')):
-                receive_GET(self, 'interface to shelly devices')
-            elif (self.path.endswith('/home-automation/shelly/relay/0')):
-                request = requests.get(config[CONFIG_SHELLYURL] + config[CONFIG_SHELLYRELAY0], headers={'Authorization': 'Basic ' + config[CONFIG_SHELLYAUTHORIZATION]})
-                receive_GET(self, request.text)
-            elif (self.path.endswith('/server-state')):
-                receive_GET(self, 'server running')
-            elif (self.path.endswith('/status')):
-                self.send_response(200)
-                self.send_header('Content-type', 'application/json')
-                self.send_header('Access-Control-Allow-Origin', '*')
-                self.end_headers()
-                f=open("httpServerLog.txt", "r")
-                logLines = f.readlines()
-                logLines.reverse()
-                f.close()  
-                for logLine in logLines:
-                	self.wfile.write(json.dumps({'message': logLine}).encode('utf-8'))
+            if (isAuthenticated):
+                if (self.path.endswith('/home-automation')):
+                    send_response(self, 'interface to home automation devices', 200)
+
+                elif (self.path.endswith('/home-automation/shelly')):
+                    send_response(self, 'interface to shelly devices', 200)
+
+                elif (self.path.endswith('/home-automation/shelly/relay/0')):
+                    request = requests.get(config[CONFIG_SHELLYURL] + config[CONFIG_SHELLYRELAY0], headers={'Authorization': 'Basic ' + config[CONFIG_SHELLYAUTHORIZATION]})
+                    send_response(self, request.text, 200)
+
+                elif (self.path.endswith('/server-state')):
+                    send_response(self, 'server running', 200)
+
+                elif (self.path.endswith('/status')):
+                    f=open("httpServerLog.txt", "r")
+                    logLines = f.readlines()
+                    logLines.reverse()
+                    f.close() 
+                    send_response(self, logLines, 200)
+
+                else:
+                    self.send_response(404)
             else:
-                self.send_response(404)
-            self.end_headers()
+                send_response(self, 'not authenticated', 401)
         except:
             error =  sys.exc_info()[0]
             log("Unexpected error; " + error)
             print("Unexpected error:", error)
             self.send_response(500)
-            self.end_headers()
+
+        self.end_headers()
             
     ###POST
     def do_POST(self):
@@ -92,8 +98,8 @@ def getConfig():
     config.read('config.txt')
     return dict(config.items('server-config'))
     
-def receive_GET(self, message):
-    self.send_response(200)
+def send_response(self, message, code):
+    self.send_response(code)
     self.send_header('Content-type', 'application/json')
     self.send_header('Access-Control-Allow-Origin', '*')
     self.end_headers()

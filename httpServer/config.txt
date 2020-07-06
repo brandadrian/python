@@ -2,4 +2,5 @@
 port = 9002
 shelly-url = http://192.168.1.136
 shelly-relay0 = /relay/0
-authorization-token = YWRtaW46YWRtaW4=
+shelly-authorization-token = YWRtaW46YWRtaW4=
+api-authorization-token = YWRtaW46bGV0bWVpbg==
