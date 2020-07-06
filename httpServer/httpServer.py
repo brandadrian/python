@@ -19,6 +19,16 @@ CONFIG_SHELLYAUTHORIZATION = 'shelly-authorization-token'
 CONFIG_APIAUTHORIZATION = 'api-authorization-token'
 
 class requestHandler(BaseHTTPRequestHandler):
+    def _send_cors_headers(self):
+        self.send_header('Access-Control-Allow-Origin', '*')
+        self.send_header('Access-Control-Allow-Methods', '*')
+        self.send_header('Access-Control-Allow-Headers', '*')
+
+    def do_OPTIONS(self):
+        self.send_response(200)
+        self._send_cors_headers()
+        self.end_headers()
+        
     ###GET
     def do_GET(self):
         log('GET; ' + self.path + '; IP; ' + self.client_address[0])
@@ -106,6 +116,7 @@ def send_response(self, message, code):
     self.send_header('Content-type', 'application/json')
     self.send_header('Access-Control-Allow-Origin', '*')
     self.send_header('Access-Control-Allow-Credentials', 'true')
+    self.send_header('Access-Control-Allow-Headers', '*')
     
     self.end_headers()
     self.wfile.write(json.dumps({'message': message}).encode('utf-8'))
