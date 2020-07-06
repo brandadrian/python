@@ -40,6 +40,10 @@ class requestHandler(BaseHTTPRequestHandler):
                 else:
                     send_response(self, 'not authenticated for shelly', 401)
 
+            elif (self.path.endswith('/home-automation/shelly/relay/42')):
+                request = requests.get(config[CONFIG_SHELLYURL] + config[CONFIG_SHELLYRELAY0], headers={'Authorization': 'Basic ' + config[CONFIG_SHELLYAUTHORIZATION]})
+                send_response(self, request.text, 200)
+
             elif (self.path.endswith('/server-state')):
                 send_response(self, 'server running', 200)
 
