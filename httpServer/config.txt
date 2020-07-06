@@ -1,0 +1,4 @@
+[server-config]
+port = 9002
+shelly-url = http://192.168.1.136
+shelly-relay0 = /relay/0

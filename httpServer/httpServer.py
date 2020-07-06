@@ -9,16 +9,27 @@ from http.server import HTTPServer, BaseHTTPRequestHandler
 from datetime import datetime
 import json
 import ssl
+import requests
+import configparser 
 
-class requestHandler(BaseHTTPRequestHandler):        
+CONFIG_PORT = 'port'
+CONFIG_SHELLYURL = "shelly-url"
+CONFIG_SHELLYRELAY0 = 'shelly-relay0'
+
+class requestHandler(BaseHTTPRequestHandler):
     ###GET
     def do_GET(self):
         log('GET; ' + self.path + '; IP; ' + self.client_address[0])
         try:
+            config = getConfig()
+            
             if (self.path.endswith('/home-automation')):
                 receive_GET(self, 'interface to home automation devices')
             elif (self.path.endswith('/home-automation/shelly')):
                 receive_GET(self, 'interface to shelly devices')
+            elif (self.path.endswith('/home-automation/shelly/relay/0')):
+                request = requests.get(config[CONFIG_SHELLYURL] + config[CONFIG_SHELLYRELAY0])
+                receive_GET(self, request.text)
             elif (self.path.endswith('/server-state')):
                 receive_GET(self, 'server running')
             elif (self.path.endswith('/status')):
@@ -61,7 +72,7 @@ class requestHandler(BaseHTTPRequestHandler):
             self.end_headers()
             
 def serve():
-    PORT = 9001
+    PORT = int(getConfig()[CONFIG_PORT])
     server_address = ('', PORT)
     server = HTTPServer(server_address, requestHandler)
     print('Server running on port: ', PORT)
@@ -74,6 +85,11 @@ def log(message):
     f = open("httpServerLog.txt", "a")
     f.write(messageInternal)
     f.close()
+
+def getConfig():
+    config = configparser.RawConfigParser()
+    config.read('config.txt')
+    return dict(config.items('server-config'))
     
 def receive_GET(self, message):
     self.send_response(200)
