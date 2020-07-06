@@ -105,6 +105,8 @@ def send_response(self, message, code):
     self.send_response(code)
     self.send_header('Content-type', 'application/json')
     self.send_header('Access-Control-Allow-Origin', '*')
+    self.send_header('Access-Control-Allow-Credentials', 'true')
+    
     self.end_headers()
     self.wfile.write(json.dumps({'message': message}).encode('utf-8'))
 
