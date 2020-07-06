@@ -27,32 +27,31 @@ class requestHandler(BaseHTTPRequestHandler):
             config = getConfig()
             isAuthenticated = self.headers.get('Authorization') == 'Basic ' + config[CONFIG_APIAUTHORIZATION]
 
-            if (self.path.endswith('/server-state')):
-                send_response(self, 'server running', 200)
-                return
+            if (self.path.endswith('/home-automation')):
+                end_response(self, 'interface to home automation devices', 200)
 
-            if (isAuthenticated):
-                if (self.path.endswith('/home-automation')):
-                    send_response(self, 'interface to home automation devices', 200)
+            elif (self.path.endswith('/home-automation/shelly')):
+                send_response(self, 'interface to shelly devices', 200)
 
-                elif (self.path.endswith('/home-automation/shelly')):
-                    send_response(self, 'interface to shelly devices', 200)
-
-                elif (self.path.endswith('/home-automation/shelly/relay/0')):
+            elif (self.path.endswith('/home-automation/shelly/relay/0')):
+                if (isAuthenticated):
                     request = requests.get(config[CONFIG_SHELLYURL] + config[CONFIG_SHELLYRELAY0], headers={'Authorization': 'Basic ' + config[CONFIG_SHELLYAUTHORIZATION]})
                     send_response(self, request.text, 200)
-
-                elif (self.path.endswith('/status')):
-                    f=open("httpServerLog.txt", "r")
-                    logLines = f.readlines()
-                    logLines.reverse()
-                    f.close() 
-                    send_response(self, logLines, 200)
-
                 else:
-                    self.send_response(404)
+                    send_response(self, 'not authenticated for shelly', 401)
+
+            elif (self.path.endswith('/server-state')):
+                send_response(self, 'server running', 200)
+
+            elif (self.path.endswith('/status')):
+                f=open("httpServerLog.txt", "r")
+                logLines = f.readlines()
+                logLines.reverse()
+                f.close() 
+                send_response(self, logLines, 200)
+
             else:
-                send_response(self, 'not authenticated', 401)
+                self.send_response(404)                
         except:
             error =  sys.exc_info()[0]
             log("Unexpected error; " + error)
