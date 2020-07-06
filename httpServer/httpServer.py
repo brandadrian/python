@@ -29,6 +29,7 @@ class requestHandler(BaseHTTPRequestHandler):
 
             if (self.path.endswith('/server-state')):
                 send_response(self, 'server running', 200)
+                return
 
             if (isAuthenticated):
                 if (self.path.endswith('/home-automation')):
