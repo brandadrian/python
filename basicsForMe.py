@@ -13,6 +13,20 @@ class Basics():
         b = 2
         c = 2 * 42
         print('Result: ', a, '+', b, '=', c)
+        myList = ['Adrian', 'Peter', 'Fritz']
+        print('Length' + str(len(myList)))
+        print(myList)
+        removedItem = myList.pop()
+        print(removedItem)
+        print('#'.join(myList))
+        stringToList = 'Ich bin ein Satz mit vielen Woertern'
+        print('Words in: ' + stringToList)
+        print(len(stringToList.split(' ')))
+        print('Adrian in List?')
+        print('Adrian' in myList)
+        testString = 'Irgendein String'
+        print('String not in testString-Variable?')
+        print('String' not in testString)
 
 ###Variables###
         print('Conditions\n')
@@ -56,4 +70,4 @@ class Basics():
 
 
 test = Basics()
-test.showUserInput()
+test.firstMethod()
