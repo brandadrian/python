@@ -1,5 +1,7 @@
 import time
 from datetime import datetime
+from pymongo import MongoClient
+from bson.objectid import ObjectId
 
 class Basics():
     def firstMethod(self):
@@ -67,7 +69,16 @@ class Basics():
             print('Countdown: ', seconds, 's')
             time.sleep(1)
             seconds=seconds-1
+            
+    def mongoDb(self):
+        client = MongoClient('localhost', 2717)
+        db = client["laufDb"]
+        #Insert
+        #db.laufCol.insert_one({"name":"hans", "age":22, "_id": 10})
+        #Read
+        print(db.laufCol.find_one({"_id": 10}))
+        #print(db.laufCol.find_one({"_id": ObjectId("5fb2b38286972424cef7ec2d")}))
 
 
 test = Basics()
-test.firstMethod()
+test.mongoDb()
