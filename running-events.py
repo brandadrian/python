@@ -10,7 +10,7 @@ client = MongoClient('mongodb+srv://' + usr + ':' + pwd + '@cluster0.srbj2.mongo
 db = client['running-event-db']
 collection = db['running-event']
 
-@app.route('/running-events')
+@app.route('/running-event')
 def get():
     documents = collection.find()
     response = []
@@ -19,7 +19,7 @@ def get():
         response.append(document)
     return json.dumps(response)
 
-@app.route('/running-events', methods=['POST'])
+@app.route('/running-event', methods=['POST'])
 def post():
     req_data = request.get_json()
     collection.insert_one(req_data).inserted_id
