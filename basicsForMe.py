@@ -71,6 +71,8 @@ class Basics():
             seconds=seconds-1
             
     def mongoDb(self):
+        #docker volume create mongodbdata
+        #docker run -p 27017:27017 -v mongodbdata:/data/db mongo
         client = MongoClient('localhost', 2717)
         db = client["laufDb"]
         #Insert
